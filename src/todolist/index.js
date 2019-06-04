@@ -1,5 +1,6 @@
 
 import React from 'react'
+import TodoItem from './TodoItem'
 import './index.css'
 
 export default class TodoList extends React.Component{
@@ -32,13 +33,18 @@ export default class TodoList extends React.Component{
 
     }
 
-    deleteItem=(index)=>{
+    handleDdeleteItem=(index)=>{
         const list=this.state.list
         list.splice(index,1)
         this.setState({
             list
         })
 
+    }
+    getTodoItem=()=>{
+       return this.state.list.map((item,index)=>{
+        return<TodoItem content={item} index={index} deleteItem={this.handleDdeleteItem}/>
+    })
     }
 
     render(){
@@ -50,9 +56,8 @@ export default class TodoList extends React.Component{
                     <button onClick={this.submit}>提交</button>
                 </div>
                 <ul>
-                   {this.state.list.map((item,index)=>{
-                       return (<li key={index} onClick={this.deleteItem.bind(this,index)}>{item}</li>)
-                   })}
+                    {this.getTodoItem()}
+                  
                 </ul>
             </div>
         )
