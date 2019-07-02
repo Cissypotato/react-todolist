@@ -1,65 +1,48 @@
 
 import React from 'react'
-import TodoItem from './TodoItem'
-import './index.css'
+import store from './../store/index.js'
+import 'antd/dist/antd.css'
+import {Input,Button,List} from 'antd'
+import {createInputValueChangeAction,createAddTodoItemAction,createDeleteTodoItemAction} from './../store/actionGenerator.js'
 
 export default class TodoList extends React.Component{
     constructor(props){
         super(props)
-        this.state={
-            inputValue:'',
-            list:[]
-        }
+        this.state=store.getState()
+        store.subscribe(this.handleStateChange)
     }
-
-    handleInputChange=(e)=>{
-        const inputValue=e.target.value
-        this.setState({
-            inputValue
-        })
+    handleStateChange=()=>{
+        this.setState(store.getState())
     }
-
-    submit=()=>{
-        const inputValue=this.state.inputValue
-        // const list=this.state.list
-        // list.push(inputValue)
-        // this.setState({
-        //     list
-        // })
-        this.setState({
-            list:[...this.state.list,inputValue],
-            inputValue:''
-        })
-
+    handleChange=(e)=>{
+        let action=createInputValueChangeAction(e.target.value)
+        store.dispatch(action)
     }
-
-    handleDdeleteItem=(index)=>{
-        const list=this.state.list
-        list.splice(index,1)
-        this.setState({
-            list
-        })
-
+    handleSubmit=()=>{
+        const action=createAddTodoItemAction()
+        store.dispatch(action)
     }
-    getTodoItem=()=>{
-       return this.state.list.map((item,index)=>{
-        return<TodoItem content={item} index={index} deleteItem={this.handleDdeleteItem}/>
-    })
+    handleClickItem=(index)=>{
+        const action=createDeleteTodoItemAction(index)
+        store.dispatch(action)
     }
-
-    render(){
-        return(
-            <div className="wrapper">
-                <div>
-                    <label>请输入</label>
-                    <input value={this.state.inputValue} onChange={this.handleInputChange}/>
-                    <button onClick={this.submit}>提交</button>
-                </div>
-                <ul>
-                    {this.getTodoItem()}
-                  
-                </ul>
-            </div>
-        )
-    }
+ render(){
+     return (
+         <div>
+             <Input placeholder="inputIfo" style={{width:300}} value={this.state.inputValue} 
+             onChange={this.handleChange}/>
+             <Button type="primary" onClick={this.handleSubmit}>提交</Button>
+             <List
+                bordered
+                dataSource={this.state.list}
+                renderItem={(item,index) => (
+                    <List.Item onClick={()=>this.handleClickItem(index)}>
+                     {item}
+                    </List.Item>
+      )}
+      style={{width:300}}
+    />
+         </div>
+     )
+ }
 }
