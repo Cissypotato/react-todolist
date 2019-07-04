@@ -2,14 +2,23 @@
 import React from 'react'
 import store from './../store/index.js'
 import 'antd/dist/antd.css'
-import {Input,Button,List} from 'antd'
-import {createInputValueChangeAction,createAddTodoItemAction,createDeleteTodoItemAction} from './../store/actionGenerator.js'
-
+import axios from 'axios'
+import {createInputValueChangeAction,createAddTodoItemAction,createDeleteTodoItemAction,
+initListAction} from './../store/actionGenerator.js'
+import TodolistUI from './todolistUI.js'
 export default class TodoList extends React.Component{
     constructor(props){
         super(props)
         this.state=store.getState()
         store.subscribe(this.handleStateChange)
+    }
+    componentDidMount(){
+        axios.get('https://www.easy-mock.com/mock/5d1e034d0d0695685019b862/todolist/list').then((res)=>{
+            console.log(res.data.list)
+            let action=initListAction(res.data.list)
+            console.log(action)
+            store.dispatch(action)
+        })
     }
     handleStateChange=()=>{
         this.setState(store.getState())
@@ -27,22 +36,12 @@ export default class TodoList extends React.Component{
         store.dispatch(action)
     }
  render(){
-     return (
-         <div>
-             <Input placeholder="inputIfo" style={{width:300}} value={this.state.inputValue} 
-             onChange={this.handleChange}/>
-             <Button type="primary" onClick={this.handleSubmit}>提交</Button>
-             <List
-                bordered
-                dataSource={this.state.list}
-                renderItem={(item,index) => (
-                    <List.Item onClick={()=>this.handleClickItem(index)}>
-                     {item}
-                    </List.Item>
-      )}
-      style={{width:300}}
-    />
-         </div>
-     )
+     return <TodolistUI
+        inputValue={this.state.inputValue}
+        handleChange={this.handleChange}
+        handleSubmit={this.handleSubmit}
+        list={this.state.list}
+        handleClickItem={(index)=>this.handleClickItem(index)}
+     />
  }
 }

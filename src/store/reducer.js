@@ -1,5 +1,5 @@
 
-import {INPUT_VALUE_CHANGE,ADD_TODO_ITEM,DELETE_TODO_ITEM} from './actionTypes.js'
+import {INPUT_VALUE_CHANGE,ADD_TODO_ITEM,DELETE_TODO_ITEM,INIT_TODO_LIST} from './actionTypes.js'
 
 const defaultState={
     inputValue:'',
@@ -8,6 +8,11 @@ const defaultState={
 
 
 export default function(state=defaultState,action){
+    if(action.type===INIT_TODO_LIST){
+        let newState=JSON.parse(JSON.stringify(state))
+        newState.list=action.list
+        return newState
+    }
     if(action.type===INPUT_VALUE_CHANGE){
         let newState=JSON.parse(JSON.stringify(state))
         newState.inputValue=action.value
